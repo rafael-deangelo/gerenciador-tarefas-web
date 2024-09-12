@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow-lg p-4 w-100" style="max-width: 600px;">
+        <h2 class="text-center mb-4">Adicione uma Nova Tarefa</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="title">Título</label>
+                <input type="text" class="form-control" id="title" name="title" placeholder="Titulo da Tarefa" value="{{ task.title if task else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Descrição</label>
+                <textarea class="form-control" id="description" name="description" rows="4" placeholder="Coloque a Descrição" required>{{ task.description if task else '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select class="form-control" id="status" name="status" required>
+                    <option value="Pendente" {% if task and task.status == 'Pendente' %}selected{% endif %}>Pendente</option>
+                    <option value="Em Andamento" {% if task and task.status == 'Em Andamento' %}selected{% endif %}>Em Andamento</option>
+                    <option value="Concluida" {% if task and task.status == 'Concluida' %}selected{% endif %}>Concluída</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Criar Tarefa</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

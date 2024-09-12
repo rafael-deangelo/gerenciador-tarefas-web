@@ -1,0 +1,2 @@
+SECRET_KEY = '12332'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'

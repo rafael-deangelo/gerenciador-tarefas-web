@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background-color: #f0f2f5; /* Fundo claro */
+        }
+        .sidebar {
+            height: 100vh;
+            width: 200px; /* Largura reduzida da sidebar */
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40; /* Cinza escuro */
+            color: #ffffff;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #ffffff;
+            padding: 15px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #495057; /* Cor de hover mais clara */
+            color: #d4d4d4; /* Texto de hover mais suave */
+        }
+        .content {
+            margin-left: 200px; /* Ajuste da margem para corresponder à nova largura da sidebar */
+            padding: 20px;
+        }
+        .navbar {
+            background-color: #6c757d; /* Barra de navegação cinza médio */
+        }
+        .navbar-brand {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #ffffff; /* Texto da marca em branco */
+        }
+        .btn-primary {
+            background-color: #17a2b8; /* Azul esverdeado */
+            border-color: #17a2b8;
+        }
+        .btn-primary:hover {
+            background-color: #138496; /* Tom mais escuro para hover */
+            border-color: #117a8b;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800;
+            border-color: #d39e00;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .task-list .card {
+            background-color: #ffffff; /* Fundo branco para as tarefas */
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra leve */
+        }
+        .task-list .card .badge {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        {% if 'user_id' in session %}
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Cadastre-se</a>
+        {% endif %}
+    </div>
+
+    <div class="content">
+        <nav class="navbar navbar-expand-lg">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Gerenciador de Tarefas</a>
+        </nav>
+        <div class="container mt-4">
+            <h2>Olá {{ username }}, Bem-Vindo!</h2>
+
+            <br>
+            <h3>Minhas Tarefas</h3>
+            <br>
+
+            <!-- Botões e filtros -->
+            <a href="{{ url_for('all_tasks') }}" class="btn btn-primary mb-3">Listar Todas as Tarefas</a>
+            <a href="{{ url_for('task_form') }}" class="btn btn-primary mb-3">Adicionar Nova Tarefa</a>
+
+            <div class="filters mb-3">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary {% if not status_filter %}active{% endif %}">Todas</a>
+                <a href="{{ url_for('dashboard', status='Pendente') }}" class="btn btn-warning {% if status_filter == 'Pendente' %}active{% endif %}">Pendente</a>
+                <a href="{{ url_for('dashboard', status='Em Andamento') }}" class="btn btn-info {% if status_filter == 'Em Andamento' %}active{% endif %}">Em Andamento</a>
+                <a href="{{ url_for('dashboard', status='Concluida') }}" class="btn btn-success {% if status_filter == 'Concluida' %}active{% endif %}">Concluída</a>
+            </div>
+
+<!-- Lista de tarefas -->
+<div class="task-list">
+    {% for task in tasks %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h4 class="card-title">{{ task.title }}</h4>
+                <p class="card-text">{{ task.description }}</p>
+                <span class="badge
+                    {% if task.status == 'Pendente' %} badge-warning
+                    {% elif task.status == 'Em Andamento' %} badge-info
+                    {% elif task.status == 'Concluida' %} badge-success
+                    {% endif %} 
+                    p-2 fs-5">
+                    {{ task.status }}
+                </span>
+                
+                <!-- Container flex para alinhar os botões -->
+                <div class="d-flex mt-3">
+                    <a href="{{ url_for('edit_task', task_id=task.id) }}" class="btn btn-primary btn-sm mr-2">Alterar Status</a>
+                    <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-danger btn-sm mr-2">Excluir</a>
+                    <a href="{{ url_for('change_task_owner', task_id=task.id) }}" class="btn btn-warning btn-sm mr-2">Transferir Tarefa</a>
+                </div>
+
+            </div>
+        </div>
+    {% else %}
+        <p>Não há tarefas para exibir no momento!</p>
+    {% endfor %}
+</div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

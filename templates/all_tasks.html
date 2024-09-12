@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Tasks</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background-color: #f0f2f5; /* Fundo claro */
+        }
+        .sidebar {
+            height: 100vh;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #343a40; /* Cinza escuro */
+            color: #ffffff;
+            padding-top: 20px;
+        }
+        .sidebar a {
+            color: #ffffff;
+            padding: 15px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #495057; /* Cor de hover mais clara */
+            color: #d4d4d4; /* Texto de hover mais suave */
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .navbar {
+            background-color: #6c757d; /* Barra de navegação cinza médio */
+        }
+        .navbar-brand {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #ffffff; /* Texto da marca em branco */
+        }
+        .card {
+            border: 1px solid #28a745; /* Borda verde */
+            border-radius: 0.5rem;
+        }
+        .card-header {
+            background-color: #28a745; /* Verde da header do card */
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .card-body {
+            background-color: #ffffff; /* Fundo branco para o corpo do card */
+        }
+        .badge {
+            font-size: 0.875rem;
+            padding: 0.5em 0.75em;
+            border-radius: 0.25rem;
+        }
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+        }
+        .btn-primary {
+            background-color: #17a2b8; /* Azul esverdeado */
+            border-color: #17a2b8;
+        }
+        .btn-primary:hover {
+            background-color: #138496; /* Tom mais escuro para hover */
+            border-color: #117a8b;
+        }
+        .btn-danger {
+            background-color: #dc3545; /* Vermelho para excluir */
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333; /* Tom mais escuro para hover */
+            border-color: #bd2130;
+        }
+        .btn-warning {
+            background-color: #ffc107; /* Amarelo para transferir */
+            border-color: #ffc107;
+        }
+        .btn-warning:hover {
+            background-color: #e0a800; /* Tom mais escuro para hover */
+            border-color: #d39e00;
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="sidebar">
+        {% if 'user_id' in session %}
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Cadastre-se</a>
+        {% endif %}
+    </div>
+    <div class="content">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Gerenciador de Tarefas</a>
+        </nav>
+        <div class="container mt-4">
+            <h3>Lista de Tarefas</h3>
+            <div class="task-list">
+                {% for task in tasks %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            {{ task.title }}
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ task.description }}</p>
+                            <span class="badge
+                                  {% if task.status == 'Pendente' %} badge-warning
+                                  {% elif task.status == 'Em Andamento' %} badge-info
+                                  {% elif task.status == 'Concluida' %} badge-success
+                                  {% endif %}">
+                                {{ task.status }}
+                            </span>
+                            <p class="mt-2"><strong>Usuário:</strong> {{ task.owner.username }}</p> <!-- Exibindo o proprietário -->
+                            <div class="mt-3">
+                                <a href="{{ url_for('edit_task', task_id=task.id) }}" class="btn btn-primary btn-sm">Alterar Status</a>
+                                <a href="{{ url_for('delete_task', task_id=task.id) }}" class="btn btn-danger btn-sm">Excluir</a>
+                                <a href="{{ url_for('change_task_owner', task_id=task.id) }}" class="btn btn-warning btn-sm">Transferir Tarefa</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p>Não há tarefas para exibir no momento!</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
